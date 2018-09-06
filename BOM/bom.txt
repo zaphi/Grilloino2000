@@ -1,0 +1,44 @@
+Partlist
+
+Exported from smokoino.sch at 05.09.2018 19:11
+
+EAGLE Version 7.5.0 Copyright (c) 1988-2015 CadSoft
+
+Assembly variant: 
+
+Part     Value          Device        Package       Library          Sheet
+
+3,3V                    PINHD-1X2     1X02          pinhead          1
+BUTTONS                 PINHD-1X4     1X04          pinhead          1
+C1       0,33uF         C5/2.5        C5B2.5        capacitor-wima   1
+C2       0,1uF          C5/2.5        C5B2.5        capacitor-wima   1
+GND                     PINHD-1X4     1X04          pinhead          1
+HEAT                    PINHD-1X2     1X02          pinhead          1
+IC1      4051N          4051N         DIL16         40xx             1
+IC2      7805T          7805T         TO220H        linear           1
+J1                      DCJ0303       DCJ0303       con-jack         1
+JP1                     PINHD-1X12    1X12          pinhead          1
+JP2                     PINHD-1X1     1X01          pinhead          1
+JP3                     PINHD-1X1     1X01          pinhead          1
+JP7                     PINHD-1X1     1X01          pinhead          1
+LCD                     PINHD-1X4     1X04          pinhead          1
+P-IN2                   PINHD-1X2     1X02          pinhead          1
+Q1       STP36NF06L     IRF540        TO220BV       transistor-power 1
+R1       47k            R-EU_0207/10  0207/10       rcl              1
+R2       47k            R-EU_0207/10  0207/10       rcl              1
+R3       47k            R-EU_0207/10  0207/10       rcl              1
+R4       47k            R-EU_0207/10  0207/10       rcl              1
+R5       560            R-EU_0207/10  0207/10       rcl              1
+R6       47k            R-EU_0207/10  0207/10       rcl              1
+R7       47k            R-EU_0207/10  0207/10       rcl              1
+R8       47k            R-EU_0207/10  0207/10       rcl              1
+R9       10k            R-EU_0207/10  0207/10       rcl              1
+R11      1k             R-EU_0207/10  0207/10       rcl              1
+R12      4k7            R-EU_0207/10  0207/10       rcl              1
+R13      4700           R-EU_0207/10  0207/10       rcl              1
+SV1                     MA03-1        MA03-1        con-lstb         1
+U$1      ESP12E_DEVKIT  ESP12E_DEVKIT ESP12E_DEVKIT ESP12E_DEVKIT    1
+U$3      JACK_2_5       JACK_2_5      JACK_2_5      2_5mm_jack       1
+U$4      JACK_2_5       JACK_2_5      JACK_2_5      2_5mm_jack       1
+U$5      JACK_2_5       JACK_2_5      JACK_2_5      2_5mm_jack       1
+U$6      JACK_2_5       JACK_2_5      JACK_2_5      2_5mm_jack       1
