@@ -29,17 +29,17 @@ char pbserver[] = "api.pushingbox.com";
 const char* host = "api.thingspeak.com";
 /********************************************************************/
 /********************************************************************/
-String vers = "V3.0";
+String vers = "V3.1";
 /********************************************************************/
 /********************************************************************/
 // ThingSpeak und Pushingbox Settings Grilloino
 //blynk
-char auth[] = "xxx";
+char auth[] = "asdf";
 //Pushingbox
-char devid[] = "xx";
+char devid[] = "asdf";
 //thingspeak
-const int channelID = xxx;
-String writeAPIKey = "xxx"; // write API key for your ThingSpeak Channel
+const int channelID = 123;
+String writeAPIKey = "asdf"; // write API key for your ThingSpeak Channel
 /********************************************************************/
 /********************************************************************/
 int lowTemp;              //  Low limit warning for smoker temp
@@ -85,7 +85,8 @@ LiquidCrystal_I2C lcd(0x3F, 16, 2); //D2 & D1
 Servo myservo;  // create servo object to control a servo
 WiFiClient client;
 WiFiServer server(80);
-WidgetLED FAN(V4);
+WidgetLED FAN(V9);
+WidgetLED KLAPPE(V20);
 double highTempd;
 double setPointd;
 int pushMode = 0;               // Pushingbox 1 = on 0= off
@@ -93,6 +94,11 @@ int logMode = 1;                // Thingspeak Loggin 1 = on 0= off
 int httpMode = 1;               // Http Server 1 = on 0= off
 int menue = 0;                  // Menue off
 int displaymode = 1;           // Menue pages
+int logstate;
+int pushstate;
+int httpstate;
+int idleMode = 0;
+int idlestate;
 int val;
 int val2;
 int lowlim = 0;               // Values below this will considered erroneous
@@ -100,6 +106,11 @@ float air;                      //  Smoker temperature
 float meat;                     //   Meat temperature
 float meat2;                     //   Meat temperature
 float meat3;                     //   Meat temperature
+char event[80];
+int air1;                                              // We will convert the float values to int so that the Pushingbox API can handle them more cleanly
+int meati;
+int meati2;
+int meati3;
 int probecount = 2;
 float vin = 3.285;              //  DC Voltage as measured with DMM between +3.3 and GND
 float r2 = 47070;                // Resistance in ohms of your fixed resistor
@@ -146,6 +157,12 @@ float f0;
 int tempDown;
 int tempUp;
 double setPointd2;
+int meatUp;
+int meatDown;
+int meatUp2;
+int meatDown2;
+int meatUp3;
+int meatDown3;
 
 Timer t;
 double Output, Input;
@@ -180,20 +197,6 @@ void setup() {
 
   Serial.println();
   WiFi.begin();
-  //ALT
-  // WiFiManager wifiManager;
-  //  wifiManager.setBreakAfterConfig(true);
-  //  //reset settings - for testing
-  //  // wifiManager.resetSettings();
-  //  if (!wifiManager.autoConnect("Grilloino 2000", "12345678")) {
-  //    Serial.println("failed to connect, we should reset as see if it connects");
-  //    delay(3000);
-  //    ESP.reset();
-  //    delay(5000);
-  //    lcd.clear();
-  //    lcd.home();
-  //    lcd.print("WiFi Error");
-  //  }
   delay(5000);
   if (WiFi.status() == WL_CONNECTED) {
 
@@ -259,79 +262,9 @@ void setup() {
   myservo.write(0);
 }
 void loop() {
-  // is configuration portal requested?
-  if ( digitalRead(TRIGGER_PIN) == LOW ) {
-    server.stop();
-    Serial.println("Config mode Startetd");
-    lcd.clear();
-    lcd.home();
-    lcd.print("Config mode");
-    lcd.setCursor(0, 1);
-    lcd.print("connect to");
-    delay(1000);
-    lcd.clear();
-    lcd.home();
-    lcd.print("SSID: Grilloino");
-    lcd.setCursor(0, 1);
-    lcd.print("PWD: 12345678");
-    //WiFiManager
-    //Local intialization. Once its business is done, there is no need to keep it around
-    WiFiManager wifiManager;
+  // is configuration portal requested?#
+  wifiConfig();
 
-    //reset settings - for testing
-    //wifiManager.resetSettings();
-
-    //sets timeout until configuration portal gets turned off
-    //useful to make it all retry or go to sleep
-    //in seconds
-    wifiManager.setTimeout(120);
-
-    //it starts an access point with the specified name
-    //here  "AutoConnectAP"
-    //and goes into a blocking loop awaiting configuration
-
-    //WITHOUT THIS THE AP DOES NOT SEEM TO WORK PROPERLY WITH SDK 1.5 , update to at least 1.5.1
-    //WiFi.mode(WIFI_STA);
-
-    if (!wifiManager.startConfigPortal("Grilloino", "12345678")) {
-      Serial.println("failed to connect and hit timeout");
-      delay(3000);
-      //reset and try again, or maybe put it to deep sleep
-      ESP.reset();
-      delay(5000);
-    }
-
-    //if you get here you have connected to the WiFi
-    server.begin();
-    Serial.println("connected...yeey :)");
-    delay(1000);
-    //Blynk neu verbinden
-    while (Blynk.connect() == false) {
-      lcd.clear();
-      lcd.home();
-      lcd.print("Connected!");
-      lcd.setCursor(0, 1);
-      lcd.print(WiFi.localIP());
-      delay(1000);
-      Blynk.config(auth);  // in place of Blynk.begin(auth, ssid, pass);
-      Blynk.connect(3333);  // timeout set to 10 seconds and then continue without Blynk
-      while (Blynk.connect() == false) {
-        // Wait until connected
-        Serial.println("Try to connect to Blynk ");
-        lcd.clear();
-        lcd.home();
-        lcd.print("Try to connect");
-        lcd.setCursor(0, 1);
-        lcd.print("to Blynke");
-      }
-      lcd.clear();
-      lcd.home();
-      lcd.print("connected");
-      lcd.setCursor(0, 1);
-      lcd.print("to Blynke");
-      delay(1000);
-    }
-  }
   //Main Loop
   lowTemp = setPoint - 8;
   highTemp = setPoint + 8;
@@ -357,13 +290,128 @@ BLYNK_WRITE(V4)  // target temp down
     tempDownFunc();
   }
 }
-
 BLYNK_WRITE(V5) // target temp up
 {
   tempUp = param.asInt();
   if (tempUp == 1) {
     tempUpFunc();
   }
+}
+BLYNK_WRITE(V7) // Logging on/off
+{
+  logstate = param.asInt();
+  if (logstate == 1) {
+    logMode = 1;
+  }
+  else {
+    logMode = 0;
+  }
+}
+BLYNK_WRITE(V8) // push on/off
+{
+  pushstate = param.asInt();
+  if (pushstate == 1) {
+    pushMode = 1;
+  }
+  else {
+    pushMode = 0;
+  }
+}
+BLYNK_WRITE(V19) // http on/off
+{
+  httpstate = param.asInt();
+  if (httpstate == 1) {
+    httpMode = 1;
+  }
+  else {
+    httpMode = 0;
+  }
+}
+BLYNK_WRITE(V21) // NOTAUS
+{
+  idlestate = param.asInt();
+  if (idlestate == 1) {
+    idleMode = 1;
+  }
+  else {
+    idleMode = 0;
+  }
+}
+
+//MeatDone set by Blynk
+BLYNK_WRITE(V13)  // meatdone temp down
+{
+  meatDown = param.asInt();
+  if (meatDown == 1) {
+    meatDownFunc();
+  }
+}
+BLYNK_WRITE(V14) // meatdone temp up
+{
+  meatUp = param.asInt();
+  if (meatUp == 1) {
+    meatUpFunc();
+  }
+}
+void meatDownFunc()
+{
+  meatDone = meatDone - 1;
+  Blynk.virtualWrite(V10, meatDone);
+}
+void meatUpFunc()
+{
+  meatDone = meatDone + 1;
+  Blynk.virtualWrite(V10, meatDone);
+}
+// MeatDone2 set by Blynk
+BLYNK_WRITE(V15)  // meatdone temp down
+{
+  meatDown2 = param.asInt();
+  if (meatDown2 == 1) {
+    meatDownFunc2();
+  }
+}
+BLYNK_WRITE(V16) // meatdone temp up
+{
+  meatUp2 = param.asInt();
+  if (meatUp2 == 1) {
+    meatUpFunc2();
+  }
+}
+void meatDownFunc2()
+{
+  meatDone2 = meatDone2 - 1;
+  Blynk.virtualWrite(V11, meatDone2);
+}
+void meatUpFunc2()
+{
+  meatDone2 = meatDone2 + 1;
+  Blynk.virtualWrite(V11, meatDone2);
+}
+//MeatDone 3 set by Blynk
+BLYNK_WRITE(V17)  // meatdone temp down
+{
+  meatDown3 = param.asInt();
+  if (meatDown3 == 1) {
+    meatDownFunc3();
+  }
+}
+BLYNK_WRITE(V18) // meatdone temp up
+{
+  meatUp3 = param.asInt();
+  if (meatUp3 == 1) {
+    meatUpFunc3();
+  }
+}
+void meatDownFunc3()
+{
+  meatDone3 = meatDone3 - 1;
+  Blynk.virtualWrite(V12, meatDone3);
+}
+void meatUpFunc3()
+{
+  meatDone3 = meatDone3 + 1;
+  Blynk.virtualWrite(V12, meatDone3);
 }
 void tempDownFunc()
 {
@@ -396,11 +444,11 @@ void sendData()
       url = url + String(meat3);
       url = url + "\r\n";
       // This will send the request to the ThingSpeak
-        if (WiFi.status() == WL_CONNECTED) {
-      client.print(String("GET ") + url + " HTTP/1.1\r\n" +
-                   "Host: " + host + "\r\n" +
-                   "Connection: close\r\n\r\n");
-    }
+      if (WiFi.status() == WL_CONNECTED) {
+        client.print(String("GET ") + url + " HTTP/1.1\r\n" +
+                     "Host: " + host + "\r\n" +
+                     "Connection: close\r\n\r\n");
+      }
     }
     client.stop();
   }
@@ -409,11 +457,7 @@ void sendPush()
 {
   if (WiFi.status() == WL_CONNECTED) {
 
-    char event[80];
-    int air1;                                              // We will convert the float values to int so that the Pushingbox API can handle them more cleanly
-    int meati;
-    int meati2;
-    int meati3;
+
     if (pushMode != 1)
       return;
     air1 = (int) air;
@@ -423,184 +467,28 @@ void sendPush()
     Serial.println("try to push");
     if (air < lowTemp)
     {
-      sprintf(event, "Low+Temp:+%d*C", air1);            // The code below sends the text in the string "event" to Pushingbox which in turn sends the data to
-      // Prowl to push it to your iPhone/device of choice. The "+" is used in place of a space, but it is formatted
-      if (client.connect(pbserver, 80))                  // correctly when it shows up on my phone.
-      {
-        Serial.println("Connected to URL.");
-        Serial.println();
-
-        client.print("POST /pushingbox?devid=");
-        client.print(devid);
-        client.print("&event=");
-        client.print(event);
-        client.println(" HTTP/1.1");
-        client.println("Host: api.pushingbox.com");
-        client.println("User-Agent: arduino-ethernet");
-        client.println("Connection: close");
-        client.println();
-
-        Serial.print("POST /pushingbox?devid=");
-        Serial.print(devid);
-        Serial.print("&event=");
-        Serial.print(event);
-        Serial.println(" HTTP/1.1");
-        Serial.println("Host: api.pushingbox.com");
-        Serial.println("Connection: close");
-        Serial.println();
-
-        delay(2000);
-        client.stop();
-      }
-      else
-      {
-        client.stop();
-      }
+      sprintf(event, "Low+Temp:+%d*C", air1);
+      push();
     }
     if (air > highTemp)
     {
       sprintf(event, "High+Temp:+%d*C", air1);
-
-      if (client.connect(pbserver, 80))
-      {
-        Serial.println("Connected to URL.");
-        Serial.println();
-
-        client.print("POST /pushingbox?devid=");
-        client.print(devid);
-        client.print("&event=");
-        client.print(event);
-        client.println(" HTTP/1.1");
-        client.println("Host: api.pushingbox.com");
-        client.println("User-Agent: arduino-ethernet");
-        client.println("Connection: close");
-        client.println();
-
-        Serial.print("POST /pushingbox?devid=");
-        Serial.print(devid);
-        Serial.print("&event=");
-        Serial.print(event);
-        Serial.println(" HTTP/1.1");
-        Serial.println("Host: api.pushingbox.com");
-        Serial.println("Connection: close");
-        Serial.println();
-
-        delay(2000);
-        client.stop();
-      }
-      else
-      {
-        client.stop();
-      }
+      push();
     }
     if (meat > meatDone)
     {
       sprintf(event, "Meat+Is+Done!+%d*C", meati);
-
-      if (client.connect(pbserver, 80))
-      {
-        Serial.println("Connected to URL.");
-        Serial.println();
-
-        client.print("POST /pushingbox?devid=");
-        client.print(devid);
-        client.print("&event=");
-        client.print(event);
-        client.println(" HTTP/1.1");
-        client.println("Host: api.pushingbox.com");
-        client.println("User-Agent: arduino-ethernet");
-        client.println("Connection: close");
-        client.println();
-
-        Serial.print("POST /pushingbox?devid=");
-        Serial.print(devid);
-        Serial.print("&event=");
-        Serial.print(event);
-        Serial.println(" HTTP/1.1");
-        Serial.println("Host: api.pushingbox.com");
-        Serial.println("Connection: close");
-        Serial.println();
-
-        delay(2000);
-        client.stop();
-      }
-      else
-      {
-        client.stop();
-      }
+      push();
     }
     if (meat2 > meatDone2)
     {
       sprintf(event, "Meat2+Is+Done!+%d*C", meati2);
-
-      if (client.connect(pbserver, 80))
-      {
-        Serial.println("Connected to URL.");
-        Serial.println();
-
-        client.print("POST /pushingbox?devid=");
-        client.print(devid);
-        client.print("&event=");
-        client.print(event);
-        client.println(" HTTP/1.1");
-        client.println("Host: api.pushingbox.com");
-        client.println("User-Agent: arduino-ethernet");
-        client.println("Connection: close");
-        client.println();
-
-        Serial.print("POST /pushingbox?devid=");
-        Serial.print(devid);
-        Serial.print("&event=");
-        Serial.print(event);
-        Serial.println(" HTTP/1.1");
-        Serial.println("Host: api.pushingbox.com");
-        Serial.println("Connection: close");
-        Serial.println();
-
-        delay(2000);
-        client.stop();
-      }
-      else
-      {
-        client.stop();
-      }
+      push();
     }
-
     if (meat3 > meatDone3)
     {
       sprintf(event, "Meat+Is+Done!+%d*C", meati3);
-
-      if (client.connect(pbserver, 80))
-      {
-        Serial.println("Connected to URL.");
-        Serial.println();
-
-        client.print("POST /pushingbox?devid=");
-        client.print(devid);
-        client.print("&event=");
-        client.print(event);
-        client.println(" HTTP/1.1");
-        client.println("Host: api.pushingbox.com");
-        client.println("User-Agent: arduino-ethernet");
-        client.println("Connection: close");
-        client.println();
-
-        Serial.print("POST /pushingbox?devid=");
-        Serial.print(devid);
-        Serial.print("&event=");
-        Serial.print(event);
-        Serial.println(" HTTP/1.1");
-        Serial.println("Host: api.pushingbox.com");
-        Serial.println("Connection: close");
-        Serial.println();
-
-        delay(2000);
-        client.stop();
-      }
-      else
-      {
-        client.stop();
-      }
+      push();
     }
   }
 }
@@ -700,6 +588,12 @@ void calcTemp() {
 void updateDisplay()
 {
   Blynk.virtualWrite(V6, setPoint);
+  Blynk.virtualWrite(V7, logMode);
+  Blynk.virtualWrite(V8, pushMode);
+  Blynk.virtualWrite(V19, httpMode);
+  Blynk.virtualWrite(V10, meatDone);
+  Blynk.virtualWrite(V11, meatDone2);
+  Blynk.virtualWrite(V12, meatDone3);
   switch (displaymode) {
     case 1:
       updateDisplaytemp();
@@ -730,15 +624,29 @@ void pushHeat()
     val2 = 0;
     val = 0;
   }
-
+  if (idleMode == 1)
+  {
+    val2 = 0;
+    val = 0;
+  }
   analogWrite(pushPin, val2);
   myservo.write(val);                  // sets the servo position according to the scaled value
+
+
+
   if (val2 > 0) {
 
     FAN.on();
   }
   else {
     FAN.off();
+  }
+  if (val > 0) {
+
+    KLAPPE.on();
+  }
+  else {
+    KLAPPE.off();
   }
 }
 void updateDisplaytemp()
@@ -1219,8 +1127,113 @@ void checkVolt()
   sensorValue = analogRead(0);
   volt2 = (sensorValue / 1023.0) * 18.8; // 3,3 V am Eingang bei 18,8V am Eingang Spannungsteiler R14700 R21000
   volt = volt2 + offset;
-  Blynk.virtualWrite(V4, volt);
   // Serial.println("Spannung");
   //Serial.println(volt);
 }
+void push() {
+  if (client.connect(pbserver, 80))                  // correctly when it shows up on my phone.
+  {
+    Serial.println("Connected to URL.");
+    Serial.println();
 
+    client.print("POST /pushingbox?devid=");
+    client.print(devid);
+    client.print("&event=");
+    client.print(event);
+    client.println(" HTTP/1.1");
+    client.println("Host: api.pushingbox.com");
+    client.println("User-Agent: arduino-ethernet");
+    client.println("Connection: close");
+    client.println();
+
+    Serial.print("POST /pushingbox?devid=");
+    Serial.print(devid);
+    Serial.print("&event=");
+    Serial.print(event);
+    Serial.println(" HTTP/1.1");
+    Serial.println("Host: api.pushingbox.com");
+    Serial.println("Connection: close");
+    Serial.println();
+
+    delay(2000);
+    client.stop();
+  }
+  else
+  {
+    client.stop();
+  }
+}
+void wifiConfig() {
+  if ( digitalRead(TRIGGER_PIN) == LOW ) {
+    server.stop();
+    Serial.println("Config mode Startetd");
+    lcd.clear();
+    lcd.home();
+    lcd.print("Config mode");
+    lcd.setCursor(0, 1);
+    lcd.print("connect to");
+    delay(1000);
+    lcd.clear();
+    lcd.home();
+    lcd.print("SSID: Grilloino");
+    lcd.setCursor(0, 1);
+    lcd.print("PWD: 12345678");
+    //WiFiManager
+    //Local intialization. Once its business is done, there is no need to keep it around
+    WiFiManager wifiManager;
+
+    //reset settings - for testing
+    //wifiManager.resetSettings();
+
+    //sets timeout until configuration portal gets turned off
+    //useful to make it all retry or go to sleep
+    //in seconds
+    wifiManager.setTimeout(120);
+
+    //it starts an access point with the specified name
+    //here  "AutoConnectAP"
+    //and goes into a blocking loop awaiting configuration
+
+    //WITHOUT THIS THE AP DOES NOT SEEM TO WORK PROPERLY WITH SDK 1.5 , update to at least 1.5.1
+    //WiFi.mode(WIFI_STA);
+
+    if (!wifiManager.startConfigPortal("Grilloino", "12345678")) {
+      Serial.println("failed to connect and hit timeout");
+      delay(3000);
+      //reset and try again, or maybe put it to deep sleep
+      ESP.reset();
+      delay(5000);
+    }
+
+    //if you get here you have connected to the WiFi
+    server.begin();
+    Serial.println("connected...yeey :)");
+    delay(1000);
+    //Blynk neu verbinden
+    while (Blynk.connect() == false) {
+      lcd.clear();
+      lcd.home();
+      lcd.print("Connected!");
+      lcd.setCursor(0, 1);
+      lcd.print(WiFi.localIP());
+      delay(1000);
+      Blynk.config(auth);  // in place of Blynk.begin(auth, ssid, pass);
+      Blynk.connect(3333);  // timeout set to 10 seconds and then continue without Blynk
+      while (Blynk.connect() == false) {
+        // Wait until connected
+        Serial.println("Try to connect to Blynk ");
+        lcd.clear();
+        lcd.home();
+        lcd.print("Try to connect");
+        lcd.setCursor(0, 1);
+        lcd.print("to Blynke");
+      }
+      lcd.clear();
+      lcd.home();
+      lcd.print("connected");
+      lcd.setCursor(0, 1);
+      lcd.print("to Blynke");
+      delay(1000);
+    }
+  }
+}
