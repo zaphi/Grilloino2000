@@ -24,7 +24,7 @@ Funktionen:
 - Push Nachrichten (wird vermutlich entfernt)
 - HTTP Server (wird vermutlich entfernt)
 
-![Grilloino](https://github.com/zaphi/Grilloino2000/blob/master/img/im2.jpg "Optionaler Titel")
+![Grilloino](https://github.com/zaphi/Grilloino2000/blob/master/img/im22.jpg "Optionaler Titel")
 
 Aktueller Projektstand:
 - Prototyp seit Ostern im einsatz
