@@ -5,7 +5,6 @@
 #include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager
 #include "OneButton.h"
 #include <SPI.h>
-#include <Event.h>
 #include <Timer.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
@@ -34,12 +33,10 @@ String vers = "V3.1";
 /********************************************************************/
 // ThingSpeak und Pushingbox Settings Grilloino
 //blynk
-char auth[] = "asdf";
-//Pushingbox
-char devid[] = "asdf";
+char auth[] = "xxx";
 //thingspeak
-const int channelID = 123;
-String writeAPIKey = "asdf"; // write API key for your ThingSpeak Channel
+const int channelID = 222;
+String writeAPIKey = "xxx"; // write API key for your ThingSpeak Channel
 /********************************************************************/
 /********************************************************************/
 int lowTemp;              //  Low limit warning for smoker temp
@@ -52,32 +49,65 @@ int meatDone3 = 94;            // Temperature at which your meat is done
 /********************************************************************/
 /********************************************************************/
 /********************************************************************/
-//Pins zuweisen Layout v2
-#define pushPin 0               //D3 connect Fet or Transistor for fan
-#define pA 15                   //D8 Multiplexer A
-#define pB 13                   //D7 Multiplexer B
-#define pC 12                    //D6 Multiplexer C
-int servoPin = 16;
-//Buttons
-OneButton mbutton(14, true);    //D6 Menue Button
-OneButton sbutton(2, true);    //D4 select button
-/********************************************************************/
-/********************************************************************/
-/********************************************************************/
-/********************************************************************/
-/********************************************************************/
-/********************************************************************/
-/********************************************************************/
-/********************************************************************/
-////Pins zuweisen Layout v3
-//#define pushPin 14              //D3 connect Fet or Transistor for fan
+////Pins zuweisen Layout v2
+//#define pushPin 0               //D3 connect Fet or Transistor for fan
 //#define pA 15                   //D8 Multiplexer A
 //#define pB 13                   //D7 Multiplexer B
 //#define pC 12                    //D6 Multiplexer C
 //int servoPin = 16;
 ////Buttons
-//OneButton mbutton(2, true);    //D6 Menue Button
-//OneButton sbutton(0, true);    //D4 select button
+//OneButton mbutton(14, true);    //D6 Menue Button
+//OneButton sbutton(2, true);    //D4 select button
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+//Pins zuweisen Layout v3
+#define pushPin 14              //D3 connect Fet or Transistor for fan
+#define pA 15                   //D8 Multiplexer A
+#define pB 13                   //D7 Multiplexer B
+#define pC 12                    //D6 Multiplexer C
+int servoPin = 16;
+//Buttons
+OneButton mbutton(2, true);    //D6 Menue Button
+OneButton sbutton(0, true);    //D4 select button
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+// smoker probe
+float A = 3.3566326e-03;     // "A" Coeffecient in Steinhart-Hart Equation
+float B = 2.9233209e-04;      // "B"
+float C = 4.5056748e-06;  // "C"
+int rn1 = 199.7;
+//meat probe
+float A2 = 3.3566326e-03;     // "A" Coeffecient in Steinhart-Hart Equation
+float B2 = 2.9233209e-04;      // "B"
+float C2 = 4.5056748e-06;  // "C"
+int rn2 = 199.7;
+//meat2 probe
+float A3 = 3.3564021e-03;     // "A" Coeffecient in Steinhart-Hart Equation
+float B3 = 2.4406605e-04;      // "B"
+float C3 = 2.6173119e-06;  // "C"
+int rn3 = 230.35;
+//meat3 probe
+float A4 = 3.3564021e-03;     // "A" Coeffecient in Steinhart-Hart Equation
+float B4 = 2.4406605e-04;      // "B"
+float C4 = 2.6173119e-06;  // "C"
+int rn4 = 230.35;
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+float vin = 3.285;              //  DC Voltage as measured with DMM between +3.3 and GND
+float r2 = 47070;                // Resistance in ohms of your fixed resistor
+float r22 = 47130;                // Resistance in ohms of your fixed resistor
+float r23 = 46920;                // Resistance in ohms of your fixed resistor
+float r24 = 47370;                // Resistance in ohms of your fixed resistor
+float r25 = 47160;                // Resistance in ohms of your fixed resistor bestÃ¼ckt aber nicht verwendet Multiplexer kanal 4(5)
+float r27 = 47330;                // Resistance in ohms of your fixed resistor bestÃ¼ckt aber nicht verwendet Multiplexer kanal 6(7)
 /********************************************************************/
 /********************************************************************/
 /********************************************************************/
@@ -101,24 +131,13 @@ int idleMode = 0;
 int idlestate;
 int val;
 int val2;
+int valservo = 0;
 int lowlim = 0;               // Values below this will considered erroneous
 float air;                      //  Smoker temperature
 float meat;                     //   Meat temperature
 float meat2;                     //   Meat temperature
 float meat3;                     //   Meat temperature
-char event[80];
-int air1;                                              // We will convert the float values to int so that the Pushingbox API can handle them more cleanly
-int meati;
-int meati2;
-int meati3;
 int probecount = 2;
-float vin = 3.285;              //  DC Voltage as measured with DMM between +3.3 and GND
-float r2 = 47070;                // Resistance in ohms of your fixed resistor
-float r22 = 47130;                // Resistance in ohms of your fixed resistor
-float r23 = 46920;                // Resistance in ohms of your fixed resistor
-float r24 = 47370;                // Resistance in ohms of your fixed resistor
-float r25 = 47160;                // Resistance in ohms of your fixed resistor bestÃ¼ckt aber nicht verwendet Multiplexer kanal 4(5)
-float r27 = 47330;                // Resistance in ohms of your fixed resistor bestÃ¼ckt aber nicht verwendet Multiplexer kanal 6(7)
 int sensorValue = 0;
 float volt;
 float volt2;
@@ -126,26 +145,6 @@ float offset = -0.35;
 float Acalc;
 float Bcalc;
 float Ccalc;
-// smoker probe
-float A = 3.3566326e-03;     // "A" Coeffecient in Steinhart-Hart Equation
-float B = 2.9233209e-04;      // "B"
-float C = 4.5056748e-06;  // "C"
-int rn1 = 199.7;
-//meat probe
-float A2 = 3.3566326e-03;     // "A" Coeffecient in Steinhart-Hart Equation
-float B2 = 2.9233209e-04;      // "B"
-float C2 = 4.5056748e-06;  // "C"
-int rn2 = 199.7;
-//meat2 probe
-float A3 = 3.3564021e-03;     // "A" Coeffecient in Steinhart-Hart Equation
-float B3 = 2.4406605e-04;      // "B"
-float C3 = 2.6173119e-06;  // "C"
-int rn3 = 230.35;
-//meat3 probe
-float A4 = 3.3564021e-03;     // "A" Coeffecient in Steinhart-Hart Equation
-float B4 = 2.4406605e-04;      // "B"
-float C4 = 2.6173119e-06;  // "C"
-int rn4 = 230.35;
 int rn;
 float a0;
 float v0;
@@ -236,9 +235,6 @@ void setup() {
     lcd.print("No Blynk");
     delay(1000);
   }
-  // für DS18B20
-  // sensors.begin();
-  //
   server.begin();
   t.every(2000, readSensors);
   t.every(3000, updateDisplay);
@@ -257,8 +253,14 @@ void setup() {
   myservo.attach(servoPin);  // attaches the servo on GIO2 to the servo object
   for (int i = 0; i < 180; i++) {
     myservo.write(i);
-    delay(2);
+    delay(10);
   }
+  for (int i = 180; i > 0; i--) {
+    myservo.write(i);
+    delay(10);
+  }
+
+  
   myservo.write(0);
 }
 void loop() {
@@ -456,39 +458,28 @@ void sendData()
 void sendPush()
 {
   if (WiFi.status() == WL_CONNECTED) {
-
-
     if (pushMode != 1)
       return;
-    air1 = (int) air;
-    meati = (int) meat;
-    meati2 = (int) meat2;
-    meati3 = (int) meat3;
     Serial.println("try to push");
     if (air < lowTemp)
     {
-      sprintf(event, "Low+Temp:+%d*C", air1);
-      push();
+      Blynk.notify("!!!Low Temp!!!");
     }
     if (air > highTemp)
     {
-      sprintf(event, "High+Temp:+%d*C", air1);
-      push();
+      Blynk.notify("!!!High Temp!!!");
     }
     if (meat > meatDone)
     {
-      sprintf(event, "Meat+Is+Done!+%d*C", meati);
-      push();
+      Blynk.notify("!!!Meat Done!!!");
     }
     if (meat2 > meatDone2)
     {
-      sprintf(event, "Meat2+Is+Done!+%d*C", meati2);
-      push();
+      Blynk.notify("!!!Meat2 Done!!!");
     }
     if (meat3 > meatDone3)
     {
-      sprintf(event, "Meat+Is+Done!+%d*C", meati3);
-      push();
+      Blynk.notify("!!!Meat3 Done!!!");
     }
   }
 }
@@ -503,15 +494,16 @@ void readSensors()
   Ccalc = C;
   calcTemp();
 
-  if (isnan(f0))                                               // If value is not a number, assign an arbitrary value
+  if (f0 < 0)                                             // If value is not a number, assign an arbitrary value
   {
-    air = int(1);
+    air = 0;
   }
   else
   {
     air = f0;                                                    // Otherwise use the calculated value
-    Blynk.virtualWrite(V0, air);
+
   }
+  Blynk.virtualWrite(V0, air);
   // request Meat 1:
   digitalWrite(pA, HIGH);
   digitalWrite(pB, LOW);
@@ -521,18 +513,16 @@ void readSensors()
   Bcalc = B2;
   Ccalc = C2;
   calcTemp();
-  if (isnan(f0))                                               // If value is not a number, assign an arbitrary value
+  if (f0 < 0)                                                // If value is not a number, assign an arbitrary value
   {
-    meat = int(1);
+    meat = 0;
   }
   else
   {
     meat = f0;                                                    // Otherwise use the calculated value
-    Blynk.virtualWrite(V1, meat);
-  }
-  if (probecount == 2)
-    return;
 
+  }
+  Blynk.virtualWrite(V1, meat);
   // request Meat 2:
   digitalWrite(pA, LOW);
   digitalWrite(pB, HIGH);
@@ -542,18 +532,16 @@ void readSensors()
   Bcalc = B3;
   Ccalc = C3;
   calcTemp();
-  if (isnan(f0))                                               // If value is not a number, assign an arbitrary value
+  if (f0 < 0)                                                // If value is not a number, assign an arbitrary value
   {
-    meat2 = int(1);
+    meat2 = 0;
   }
   else
   {
     meat2 = f0;                                                    // Otherwise use the calculated value
-    Blynk.virtualWrite(V2, meat2);
-  }
 
-  if (probecount == 3)
-    return;
+  }
+  Blynk.virtualWrite(V2, meat2);
   // request Meat 3:
   digitalWrite(pA, HIGH);
   digitalWrite(pB, HIGH);
@@ -563,16 +551,16 @@ void readSensors()
   Bcalc = B4;
   Ccalc = C4;
   calcTemp();
-  if (isnan(f0))                                               // If value is not a number, assign an arbitrary value
+  if (f0 < 0)                                              // If value is not a number, assign an arbitrary value
   {
-    meat3 = int(1);
+    meat3 = 0;
   }
   else
   {
     meat3 = f0;                                                    // Otherwise use the calculated value
-    Blynk.virtualWrite(V3, meat3);
-  }
 
+  }
+  Blynk.virtualWrite(V3, meat3);
 
 
 }
@@ -630,12 +618,29 @@ void pushHeat()
     val = 0;
   }
   analogWrite(pushPin, val2);
-  myservo.write(val);                  // sets the servo position according to the scaled value
+  //  myservo.write(val);                  // sets the servo position according to the scaled value
+  Serial.println("valservo");
+  Serial.println(valservo);
+  Serial.println("val2");
+  Serial.println(val2);
 
-
+  //going slow to save power litle lm7805
+  if (val2 > valservo) {
+    for (int i = valservo; i <= val2; i++) {
+      myservo.write(i);
+      delay(10);
+      valservo = i;
+    }
+  }
+  else {
+    for (int i = valservo; i >= val2; i--) {
+      myservo.write(i);
+      valservo = i;
+      delay(10);
+    }
+  }
 
   if (val2 > 0) {
-
     FAN.on();
   }
   else {
@@ -1129,39 +1134,6 @@ void checkVolt()
   volt = volt2 + offset;
   // Serial.println("Spannung");
   //Serial.println(volt);
-}
-void push() {
-  if (client.connect(pbserver, 80))                  // correctly when it shows up on my phone.
-  {
-    Serial.println("Connected to URL.");
-    Serial.println();
-
-    client.print("POST /pushingbox?devid=");
-    client.print(devid);
-    client.print("&event=");
-    client.print(event);
-    client.println(" HTTP/1.1");
-    client.println("Host: api.pushingbox.com");
-    client.println("User-Agent: arduino-ethernet");
-    client.println("Connection: close");
-    client.println();
-
-    Serial.print("POST /pushingbox?devid=");
-    Serial.print(devid);
-    Serial.print("&event=");
-    Serial.print(event);
-    Serial.println(" HTTP/1.1");
-    Serial.println("Host: api.pushingbox.com");
-    Serial.println("Connection: close");
-    Serial.println();
-
-    delay(2000);
-    client.stop();
-  }
-  else
-  {
-    client.stop();
-  }
 }
 void wifiConfig() {
   if ( digitalRead(TRIGGER_PIN) == LOW ) {
