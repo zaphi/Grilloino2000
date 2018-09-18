@@ -1,4 +1,4 @@
-#include <FS.h>                   //this needs to be first, or it all crashes and burns...
+#include <FS.h> //this needs to be first, or it all crashes and burns...
 #include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
 #include <DNSServer.h>
 #include <ESP8266WebServer.h>
@@ -14,90 +14,31 @@
 #include <DallasTemperature.h>
 #include <PID_v1.h>
 #include <Servo.h>
+#include "probe.h"
+#define LCD
 /********************************************************************/
-// DS18B20
-//#include <OneWire.h>
-//#include <DallasTemperature.h>
-//#define ONE_WIRE_BUS 10  //SDD3
-//OneWire oneWire(ONE_WIRE_BUS);
-//DallasTemperature sensors(&oneWire);
-//
-// WIFI manager Triger Pin
-#define TRIGGER_PIN 10
-char pbserver[] = "api.pushingbox.com";
-const char* host = "api.thingspeak.com";
-/********************************************************************/
-/********************************************************************/
-String vers = "V3.1";
-/********************************************************************/
-/********************************************************************/
-// ThingSpeak und Pushingbox Settings Grilloino
-//blynk
-char auth[] = "xxx";
-//thingspeak
-const int channelID = 222;
-String writeAPIKey = "xxx"; // write API key for your ThingSpeak Channel
-/********************************************************************/
-/********************************************************************/
-int lowTemp;              //  Low limit warning for smoker temp
-int highTemp;            // High limit warning for smoker temp
-int setPoint = 110;
-int meatDone = 94;            // Temperature at which your meat is done
-int meatDone2 = 94;            // Temperature at which your meat is done
-int meatDone3 = 94;            // Temperature at which your meat is done
-/********************************************************************/
-/********************************************************************/
-/********************************************************************/
-/********************************************************************/
-////Pins zuweisen Layout v2
-//#define pushPin 0               //D3 connect Fet or Transistor for fan
-//#define pA 15                   //D8 Multiplexer A
-//#define pB 13                   //D7 Multiplexer B
-//#define pC 12                    //D6 Multiplexer C
-//int servoPin = 16;
-////Buttons
-//OneButton mbutton(14, true);    //D6 Menue Button
-//OneButton sbutton(2, true);    //D4 select button
-/********************************************************************/
-/********************************************************************/
-/********************************************************************/
-/********************************************************************/
-/********************************************************************/
-/********************************************************************/
-/********************************************************************/
-/********************************************************************/
-//Pins zuweisen Layout v3
-#define pushPin 14              //D3 connect Fet or Transistor for fan
-#define pA 15                   //D8 Multiplexer A
-#define pB 13                   //D7 Multiplexer B
-#define pC 12                    //D6 Multiplexer C
-int servoPin = 16;
-//Buttons
-OneButton mbutton(2, true);    //D6 Menue Button
-OneButton sbutton(0, true);    //D4 select button
-/********************************************************************/
-/********************************************************************/
+//probe´s in probe.h 
 /********************************************************************/
 // smoker probe
-float A = 3.3566326e-03;     // "A" Coeffecient in Steinhart-Hart Equation
-float B = 2.9233209e-04;      // "B"
-float C = 4.5056748e-06;  // "C"
-int rn1 = 199.7;
+float A = A_ET73;      // "A" Coeffecient in Steinhart-Hart Equation
+float B = B_ET73;      // "B"
+float C = C_ET73;      // "C"
+int rn1 = rn_ET73;
 //meat probe
-float A2 = 3.3566326e-03;     // "A" Coeffecient in Steinhart-Hart Equation
-float B2 = 2.9233209e-04;      // "B"
-float C2 = 4.5056748e-06;  // "C"
-int rn2 = 199.7;
+float A2 = A_ET73;      // "A" Coeffecient in Steinhart-Hart Equation
+float B2 = B_ET73;      // "B"
+float C2 = C_ET73;      // "C"
+int rn2 = rn_ET73;
 //meat2 probe
-float A3 = 3.3564021e-03;     // "A" Coeffecient in Steinhart-Hart Equation
-float B3 = 2.4406605e-04;      // "B"
-float C3 = 2.6173119e-06;  // "C"
-int rn3 = 230.35;
+float A3 = A_FANTN;      // "A" Coeffecient in Steinhart-Hart Equation
+float B3 = B_FANTN;      // "B"
+float C3 = C_FANTN;      // "C"
+int rn3 = rn_FANTN;
 //meat3 probe
-float A4 = 3.3564021e-03;     // "A" Coeffecient in Steinhart-Hart Equation
-float B4 = 2.4406605e-04;      // "B"
-float C4 = 2.6173119e-06;  // "C"
-int rn4 = 230.35;
+float A4 = A_FANTN;      // "A" Coeffecient in Steinhart-Hart Equation
+float B4 = B_FANTN;      // "B"
+float C4 = C_FANTN;      // "C"
+int rn4 = rn_FANTN;
 /********************************************************************/
 /********************************************************************/
 /********************************************************************/
@@ -111,6 +52,61 @@ float r27 = 47330;                // Resistance in ohms of your fixed resistor b
 /********************************************************************/
 /********************************************************************/
 /********************************************************************/
+// ThingSpeak und Blynk Settings Grilloino
+//blynk
+char auth[] = "cafc7a19eb984a608e7cd5f586a85024";
+//thingspeak
+const char* host = "api.thingspeak.com";
+const int channelID = 437746;
+String writeAPIKey = "MFGDXH3KXDZ721EM"; // write API key for your ThingSpeak Channel
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+String vers = "V3.1";
+/********************************************************************/
+/********************************************************************/
+int lowTemp;              //  Low limit warning for smoker temp
+int highTemp;            // High limit warning for smoker temp
+int setPoint = 110;
+int meatDone = 94;            // Temperature at which your meat is done
+int meatDone2 = 94;            // Temperature at which your meat is done
+int meatDone3 = 94;            // Temperature at which your meat is done
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+//Pins zuweisen Layout v3
+#define pushPin 14              //D3 connect Fet or Transistor for fan
+#define pA 15                   //D8 Multiplexer A
+#define pB 13                   //D7 Multiplexer B
+#define pC 12                    //D6 Multiplexer C
+// WIFI manager Triger Pin
+#define TRIGGER_PIN 10
+int servoPin = 16;
+//Buttons
+OneButton mbutton(2, true);    //D6 Menue Button
+OneButton sbutton(0, true);    //D4 select button
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+////Pins zuweisen Layout v2
+//#define pushPin 0               //D3 connect Fet or Transistor for fan
+//#define pA 15                   //D8 Multiplexer A
+//#define pB 13                   //D7 Multiplexer B
+//#define pC 12                    //D6 Multiplexer C
+// WIFI manager Triger Pin
+//#define TRIGGER_PIN 10
+//int servoPin = 16;
+////Buttons
+//OneButton mbutton(14, true);    //D6 Menue Button
+//OneButton sbutton(2, true);    //D4 select button
+
 LiquidCrystal_I2C lcd(0x3F, 16, 2); //D2 & D1
 Servo myservo;  // create servo object to control a servo
 WiFiClient client;
@@ -169,6 +165,9 @@ double Output2, Input2;
 double Kp = 30, Kp2 = 180, Ki = 0.005, Kd = 0.5;
 PID myPID(&Input, &Output, &setPointd, Kp, Ki, Kd, DIRECT);
 PID myPID2(&Input2, &Output2, &setPointd2, Kp2, Ki, Kd, DIRECT);
+//*******************************************************************
+//SETUP
+//*******************************************************************
 void setup() {
   myPID.SetMode(AUTOMATIC);
   myPID2.SetMode(AUTOMATIC);
@@ -180,6 +179,7 @@ void setup() {
   pinMode(TRIGGER_PIN, INPUT_PULLUP);
   digitalWrite(pushPin, LOW);
   //LCD init
+#ifdef LCD
   lcd.begin();
   lcd.setBacklight(HIGH);
   lcd.clear();
@@ -189,11 +189,12 @@ void setup() {
   lcd.print(">>>>>>");
   lcd.print(vers);
   lcd.print("<<<<<<");
+  #endif
+
+  
   Serial.begin(115200);
   Serial.println("-Grilloino 2000-");
   delay(3000);
-  // put your setup code here, to run once:
-
   Serial.println();
   WiFi.begin();
   delay(5000);
@@ -202,38 +203,46 @@ void setup() {
     Serial.println("connected...yeey :)");
     Serial.println("local ip");
     Serial.println(WiFi.localIP());
+    #ifdef LCD
     lcd.clear();
     lcd.home();
     lcd.print("Connected!");
     lcd.setCursor(0, 1);
     lcd.print(WiFi.localIP());
+    #endif
     delay(1000);
     Blynk.config(auth);  // in place of Blynk.begin(auth, ssid, pass);
     Blynk.connect(3333);  // timeout set to 10 seconds and then continue without Blynk
     while (Blynk.connect() == false) {
       // Wait until connected
       Serial.println("Try to connect to Blynk ");
+      #ifdef LCD
       lcd.clear();
       lcd.home();
       lcd.print("Try to connect");
       lcd.setCursor(0, 1);
       lcd.print("to Blynk");
+      #endif
     }
     Serial.println("Connected to Blynk server");
+    #ifdef LCD
     lcd.clear();
     lcd.home();
     lcd.print("Connected");
     lcd.setCursor(0, 1);
     lcd.print("to Blynk");
+    #endif
     delay(1000);
   }
   else {
+    #ifdef LCD
     lcd.clear();
     lcd.home();
     lcd.print("No WiFi");
     lcd.setCursor(0, 1);
     lcd.print("No Blynk");
     delay(1000);
+    #endif
   }
   server.begin();
   t.every(2000, readSensors);
@@ -260,7 +269,7 @@ void setup() {
     delay(10);
   }
 
-  
+
   myservo.write(0);
 }
 void loop() {
@@ -492,6 +501,7 @@ void readSensors()
   Acalc = A;
   Bcalc = B;
   Ccalc = C;
+    Serial.println(A);
   calcTemp();
 
   if (f0 < 0)                                             // If value is not a number, assign an arbitrary value
@@ -619,10 +629,6 @@ void pushHeat()
   }
   analogWrite(pushPin, val2);
   //  myservo.write(val);                  // sets the servo position according to the scaled value
-  Serial.println("valservo");
-  Serial.println(valservo);
-  Serial.println("val2");
-  Serial.println(val2);
 
   //going slow to save power litle lm7805
   if (val2 > valservo) {
@@ -658,85 +664,125 @@ void updateDisplaytemp()
 {
   if (probecount <= 2)
   {
+    #ifdef LCD
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("Smoker:");
+    #endif
     if (air < lowlim)
     {
+      #ifdef LCD
       lcd.print(" N/A");
+      #endif
     }
     else if (air > lowlim & air < 100)
     {
+      #ifdef LCD
       lcd.print(" "); //pad with a space
       lcd.print(air);
       lcd.print(" C");
+      #endif
     }
     else
     {
+      #ifdef LCD
       lcd.print(air);
       lcd.print(" C");
+      #endif
     }
+    #ifdef LCD
     lcd.setCursor(0, 1);
     lcd.print("Meat:");
+    #endif
     if (meat < lowlim)
     {
+      #ifdef LCD
       lcd.print(" N/A");
+      #endif
     }
     else if (meat > lowlim & meat < 100)
     {
+      #ifdef LCD
       lcd.print(" "); //pad with a space
       lcd.print(meat);
       lcd.print(" C");
+      #endif
     }
     else
     {
+      #ifdef LCD
       lcd.print(meat);
       lcd.print(" C");
+      #endif
     }
   }
   else {
+    #ifdef LCD
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("S:");
+    #endif
     if (air < lowlim)
     {
+      #ifdef LCD
       lcd.print(" N/A");
+      #endif
     }
     else
     {
+      #ifdef LCD
       lcd.print(air);
+      #endif
     }
+    #ifdef LCD
     lcd.setCursor(9, 0);
     lcd.print("1:");
+    #endif 
     if (meat < lowlim)
     {
+      #ifdef LCD
       lcd.print(" N/A");
+      #endif
     }
 
     else
     {
+          #ifdef LCD
       lcd.print(meat);
+      #endif
     }
+        #ifdef LCD
     lcd.setCursor(0, 1);
     lcd.print("2:");
+    #endif
     if (meat2 < lowlim)
     {
+          #ifdef LCD
       lcd.print(" N/A");
+      #endif
     }
     else
     {
+          #ifdef LCD
       lcd.print(meat2);
+      #endif
     }
+        #ifdef LCD
     lcd.setCursor(9, 1);
     lcd.print("3:");
+    #endif
     if (meat3 < lowlim)
     {
+          #ifdef LCD
       lcd.print(" N/A");
+      #endif
     }
 
     else
     {
+         #ifdef LCD
       lcd.print(meat3);
+      #endif
     }
   }
 }
@@ -744,10 +790,12 @@ void updateDisplayEvent()
 {
   if (air < lowTemp)
   {
+    #ifdef LCD
     lcd.clear();
     lcd.home();
     lcd.setCursor(2, 0);
     lcd.print("!!Low Temp!!");
+    #endif
   }
   else  if (air > lowTemp & air < highTemp)
   {
@@ -755,31 +803,39 @@ void updateDisplayEvent()
   }
   else if (air > highTemp)
   {
+    #ifdef LCD
     lcd.clear();
     lcd.home();
     lcd.setCursor(1, 0);
     lcd.print("!!High Temp!!");
+    #endif
   }
   if (meat > meatDone)
   {
+    #ifdef LCD
     lcd.clear();
     lcd.home();
     lcd.setCursor(2, 0);
     lcd.print("!Meat Finish!");
+    #endif
   }
   if (meat2 > meatDone2)
   {
+    #ifdef LCD
     lcd.clear();
     lcd.home();
     lcd.setCursor(2, 0);
     lcd.print("!Meat2 Finish!");
+    #endif
   }
   if (meat3 > meatDone3)
   {
+#ifdef LCD
     lcd.clear();
     lcd.home();
     lcd.setCursor(2, 0);
     lcd.print("!Meat3 Finish!");
+    #endif
   }
 }
 void click1() {
@@ -893,6 +949,7 @@ void longPress2() {
   Serial.println("Button 2 longPress...");
   switch (menue) {
     case 0:
+#ifdef LCD
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("Vin:");
@@ -900,19 +957,23 @@ void longPress2() {
       lcd.print(volt);
       lcd.print(" V");
       lcd.setCursor(13, 0);
+      #endif
       if (WiFi.status() == WL_CONNECTED) {
+        #ifdef LCD
         lcd.print("On");
+        #endif
         Serial.println("on");
       }
       else {
+        #ifdef LCD
         lcd.print("Off");
+        #endif
         Serial.println("off");
-
       }
-
-
+      #ifdef LCD
       lcd.setCursor(0, 1);
       lcd.print(WiFi.localIP());
+      #endif
       delay(1000);
       break;
     case 1:
@@ -941,6 +1002,7 @@ void updateDisplaymenue()
 {
   switch (menue) {
     case 1:
+#ifdef LCD
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("Sweat Temp:");
@@ -948,8 +1010,10 @@ void updateDisplaymenue()
       lcd.setCursor(0, 1);
       lcd.print(setPoint);
       lcd.print(" C");
+#endif
       break;
     case 2:
+#ifdef LCD
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("Meat Done:");
@@ -957,8 +1021,10 @@ void updateDisplaymenue()
       lcd.setCursor(0, 1);
       lcd.print(meatDone);
       lcd.print(" C");
+#endif
       break;
     case 3:
+#ifdef LCD
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("Meat Done 2:");
@@ -966,8 +1032,10 @@ void updateDisplaymenue()
       lcd.setCursor(0, 1);
       lcd.print(meatDone2);
       lcd.print(" C");
+#endif
       break;
     case 4:
+#ifdef LCD
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("Meat Done 3:");
@@ -975,17 +1043,21 @@ void updateDisplaymenue()
       lcd.setCursor(0, 1);
       lcd.print(meatDone3);
       lcd.print(" C");
+#endif
       break;
     case 5:
+#ifdef LCD
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("Meat count:");
       lcd.print(" "); //pad with a space
       lcd.setCursor(0, 1);
       lcd.print(probecount);
+#endif
       break;
 
     case 6:
+#ifdef LCD
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("Push Nachrichten:");
@@ -997,8 +1069,10 @@ void updateDisplaymenue()
       }
       else
         lcd.print("OFF");
+#endif
       break;
     case 7:
+#ifdef LCD
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("Loging:");
@@ -1010,8 +1084,10 @@ void updateDisplaymenue()
       }
       else
         lcd.print("OFF");
+#endif
       break;
     case 8:
+#ifdef LCD
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("HTTP Server:");
@@ -1023,6 +1099,7 @@ void updateDisplaymenue()
       }
       else
         lcd.print("OFF");
+#endif
       break;
   }
 }
@@ -1139,6 +1216,7 @@ void wifiConfig() {
   if ( digitalRead(TRIGGER_PIN) == LOW ) {
     server.stop();
     Serial.println("Config mode Startetd");
+#ifdef LCD
     lcd.clear();
     lcd.home();
     lcd.print("Config mode");
@@ -1150,6 +1228,7 @@ void wifiConfig() {
     lcd.print("SSID: Grilloino");
     lcd.setCursor(0, 1);
     lcd.print("PWD: 12345678");
+#endif
     //WiFiManager
     //Local intialization. Once its business is done, there is no need to keep it around
     WiFiManager wifiManager;
@@ -1183,29 +1262,35 @@ void wifiConfig() {
     delay(1000);
     //Blynk neu verbinden
     while (Blynk.connect() == false) {
+#ifdef LCD
       lcd.clear();
       lcd.home();
       lcd.print("Connected!");
       lcd.setCursor(0, 1);
       lcd.print(WiFi.localIP());
+#endif
       delay(1000);
       Blynk.config(auth);  // in place of Blynk.begin(auth, ssid, pass);
       Blynk.connect(3333);  // timeout set to 10 seconds and then continue without Blynk
       while (Blynk.connect() == false) {
         // Wait until connected
         Serial.println("Try to connect to Blynk ");
+#ifdef LCD
         lcd.clear();
         lcd.home();
         lcd.print("Try to connect");
         lcd.setCursor(0, 1);
         lcd.print("to Blynke");
+#endif
       }
+#ifdef LCD
       lcd.clear();
       lcd.home();
       lcd.print("connected");
       lcd.setCursor(0, 1);
       lcd.print("to Blynke");
       delay(1000);
+#endif
     }
   }
 }
