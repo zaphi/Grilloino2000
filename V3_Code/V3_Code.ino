@@ -15,7 +15,6 @@
 #include <PID_v1.h>
 #include <Servo.h>
 #include "probe.h"
-#define LCD
 /********************************************************************/
 //probe´s in probe.h 
 /********************************************************************/
@@ -30,35 +29,35 @@ float B2 = B_ET73;      // "B"
 float C2 = C_ET73;      // "C"
 int rn2 = rn_ET73;
 //meat2 probe
-float A3 = A_FANTN;      // "A" Coeffecient in Steinhart-Hart Equation
-float B3 = B_FANTN;      // "B"
-float C3 = C_FANTN;      // "C"
-int rn3 = rn_FANTN;
+float A3 = A_ET73;      // "A" Coeffecient in Steinhart-Hart Equation
+float B3 = B_ET73;      // "B"
+float C3 = C_ET73;      // "C"
+int rn3 = rn_ET73;
 //meat3 probe
-float A4 = A_FANTN;      // "A" Coeffecient in Steinhart-Hart Equation
-float B4 = B_FANTN;      // "B"
-float C4 = C_FANTN;      // "C"
-int rn4 = rn_FANTN;
+float A4 = A_ET73;      // "A" Coeffecient in Steinhart-Hart Equation
+float B4 = B_ET73;      // "B"
+float C4 = C_ET73;      // "C"
+int rn4 = rn_ET73;
 /********************************************************************/
 /********************************************************************/
 /********************************************************************/
-float vin = 3.285;              //  DC Voltage as measured with DMM between +3.3 and GND
-float r2 = 47070;                // Resistance in ohms of your fixed resistor
-float r22 = 47130;                // Resistance in ohms of your fixed resistor
-float r23 = 46920;                // Resistance in ohms of your fixed resistor
-float r24 = 47370;                // Resistance in ohms of your fixed resistor
-float r25 = 47160;                // Resistance in ohms of your fixed resistor bestÃ¼ckt aber nicht verwendet Multiplexer kanal 4(5)
-float r27 = 47330;                // Resistance in ohms of your fixed resistor bestÃ¼ckt aber nicht verwendet Multiplexer kanal 6(7)
+float vin = 3.293;              //  DC Voltage as measured with DMM between +3.3 and GND
+float r2 = 47000;                // Resistance in ohms of your fixed resistor
+float r22 = 47000;                // Resistance in ohms of your fixed resistor
+float r23 = 47000;                // Resistance in ohms of your fixed resistor
+float r24 = 47000;                // Resistance in ohms of your fixed resistor
+float r25 = 47000;                // Resistance in ohms of your fixed resistor bestÃ¼ckt aber nicht verwendet Multiplexer kanal 4(5)
+float r27 = 47000;                // Resistance in ohms of your fixed resistor bestÃ¼ckt aber nicht verwendet Multiplexer kanal 6(7)
 /********************************************************************/
 /********************************************************************/
 /********************************************************************/
 // ThingSpeak und Blynk Settings Grilloino
 //blynk
-char auth[] = "--";
+char auth[] = "-";
 //thingspeak
 const char* host = "api.thingspeak.com";
-const int channelID = 66;
-String writeAPIKey = "--"; // write API key for your ThingSpeak Channel
+const int channelID = 437746;
+String writeAPIKey = "-"; // write API key for your ThingSpeak Channel
 /********************************************************************/
 /********************************************************************/
 /********************************************************************/
@@ -178,8 +177,6 @@ void setup() {
   pinMode(pushPin, OUTPUT);
   pinMode(TRIGGER_PIN, INPUT_PULLUP);
   digitalWrite(pushPin, LOW);
-  //LCD init
-#ifdef LCD
   lcd.begin();
   lcd.setBacklight(HIGH);
   lcd.clear();
@@ -189,7 +186,6 @@ void setup() {
   lcd.print(">>>>>>");
   lcd.print(vers);
   lcd.print("<<<<<<");
-  #endif
 
   
   Serial.begin(115200);
@@ -203,46 +199,38 @@ void setup() {
     Serial.println("connected...yeey :)");
     Serial.println("local ip");
     Serial.println(WiFi.localIP());
-    #ifdef LCD
     lcd.clear();
     lcd.home();
     lcd.print("Connected!");
     lcd.setCursor(0, 1);
     lcd.print(WiFi.localIP());
-    #endif
     delay(1000);
     Blynk.config(auth);  // in place of Blynk.begin(auth, ssid, pass);
     Blynk.connect(3333);  // timeout set to 10 seconds and then continue without Blynk
     while (Blynk.connect() == false) {
       // Wait until connected
       Serial.println("Try to connect to Blynk ");
-      #ifdef LCD
       lcd.clear();
       lcd.home();
       lcd.print("Try to connect");
       lcd.setCursor(0, 1);
       lcd.print("to Blynk");
-      #endif
     }
     Serial.println("Connected to Blynk server");
-    #ifdef LCD
     lcd.clear();
     lcd.home();
     lcd.print("Connected");
     lcd.setCursor(0, 1);
     lcd.print("to Blynk");
-    #endif
-    delay(1000);
+    delay(500);
   }
   else {
-    #ifdef LCD
     lcd.clear();
     lcd.home();
     lcd.print("No WiFi");
     lcd.setCursor(0, 1);
     lcd.print("No Blynk");
     delay(1000);
-    #endif
   }
   server.begin();
   t.every(2000, readSensors);
@@ -664,125 +652,85 @@ void updateDisplaytemp()
 {
   if (probecount <= 2)
   {
-    #ifdef LCD
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("Smoker:");
-    #endif
     if (air < lowlim)
     {
-      #ifdef LCD
       lcd.print(" N/A");
-      #endif
     }
     else if (air > lowlim & air < 100)
     {
-      #ifdef LCD
       lcd.print(" "); //pad with a space
       lcd.print(air);
       lcd.print(" C");
-      #endif
     }
     else
     {
-      #ifdef LCD
       lcd.print(air);
       lcd.print(" C");
-      #endif
     }
-    #ifdef LCD
     lcd.setCursor(0, 1);
     lcd.print("Meat:");
-    #endif
     if (meat < lowlim)
     {
-      #ifdef LCD
       lcd.print(" N/A");
-      #endif
     }
     else if (meat > lowlim & meat < 100)
     {
-      #ifdef LCD
       lcd.print(" "); //pad with a space
       lcd.print(meat);
       lcd.print(" C");
-      #endif
     }
     else
     {
-      #ifdef LCD
       lcd.print(meat);
       lcd.print(" C");
-      #endif
     }
   }
   else {
-    #ifdef LCD
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("S:");
-    #endif
     if (air < lowlim)
     {
-      #ifdef LCD
       lcd.print(" N/A");
-      #endif
     }
     else
     {
-      #ifdef LCD
       lcd.print(air);
-      #endif
     }
-    #ifdef LCD
     lcd.setCursor(9, 0);
     lcd.print("1:");
-    #endif 
     if (meat < lowlim)
     {
-      #ifdef LCD
       lcd.print(" N/A");
-      #endif
     }
 
     else
     {
-          #ifdef LCD
       lcd.print(meat);
-      #endif
     }
-        #ifdef LCD
     lcd.setCursor(0, 1);
     lcd.print("2:");
-    #endif
     if (meat2 < lowlim)
     {
-          #ifdef LCD
       lcd.print(" N/A");
-      #endif
     }
     else
     {
-          #ifdef LCD
       lcd.print(meat2);
-      #endif
     }
-        #ifdef LCD
     lcd.setCursor(9, 1);
     lcd.print("3:");
-    #endif
     if (meat3 < lowlim)
     {
-          #ifdef LCD
       lcd.print(" N/A");
-      #endif
     }
 
     else
     {
-         #ifdef LCD
       lcd.print(meat3);
-      #endif
     }
   }
 }
@@ -790,12 +738,10 @@ void updateDisplayEvent()
 {
   if (air < lowTemp)
   {
-    #ifdef LCD
     lcd.clear();
     lcd.home();
     lcd.setCursor(2, 0);
     lcd.print("!!Low Temp!!");
-    #endif
   }
   else  if (air > lowTemp & air < highTemp)
   {
@@ -803,39 +749,31 @@ void updateDisplayEvent()
   }
   else if (air > highTemp)
   {
-    #ifdef LCD
     lcd.clear();
     lcd.home();
     lcd.setCursor(1, 0);
     lcd.print("!!High Temp!!");
-    #endif
   }
   if (meat > meatDone)
   {
-    #ifdef LCD
     lcd.clear();
     lcd.home();
     lcd.setCursor(2, 0);
     lcd.print("!Meat Finish!");
-    #endif
   }
   if (meat2 > meatDone2)
   {
-    #ifdef LCD
     lcd.clear();
     lcd.home();
     lcd.setCursor(2, 0);
     lcd.print("!Meat2 Finish!");
-    #endif
   }
   if (meat3 > meatDone3)
   {
-#ifdef LCD
     lcd.clear();
     lcd.home();
     lcd.setCursor(2, 0);
     lcd.print("!Meat3 Finish!");
-    #endif
   }
 }
 void click1() {
@@ -949,7 +887,6 @@ void longPress2() {
   Serial.println("Button 2 longPress...");
   switch (menue) {
     case 0:
-#ifdef LCD
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("Vin:");
@@ -957,24 +894,18 @@ void longPress2() {
       lcd.print(volt);
       lcd.print(" V");
       lcd.setCursor(13, 0);
-      #endif
       if (WiFi.status() == WL_CONNECTED) {
-        #ifdef LCD
-        lcd.print("On");
-        #endif
-        Serial.println("on");
+          long rssi = WiFi.RSSI();
+        lcd.print(rssi);
+        Serial.println(rssi);
       }
       else {
-        #ifdef LCD
         lcd.print("Off");
-        #endif
         Serial.println("off");
       }
-      #ifdef LCD
       lcd.setCursor(0, 1);
       lcd.print(WiFi.localIP());
-      #endif
-      delay(1000);
+      delay(3000);
       break;
     case 1:
       setPoint ++;
@@ -1002,7 +933,6 @@ void updateDisplaymenue()
 {
   switch (menue) {
     case 1:
-#ifdef LCD
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("Sweat Temp:");
@@ -1010,10 +940,8 @@ void updateDisplaymenue()
       lcd.setCursor(0, 1);
       lcd.print(setPoint);
       lcd.print(" C");
-#endif
       break;
     case 2:
-#ifdef LCD
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("Meat Done:");
@@ -1021,10 +949,8 @@ void updateDisplaymenue()
       lcd.setCursor(0, 1);
       lcd.print(meatDone);
       lcd.print(" C");
-#endif
       break;
     case 3:
-#ifdef LCD
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("Meat Done 2:");
@@ -1032,10 +958,8 @@ void updateDisplaymenue()
       lcd.setCursor(0, 1);
       lcd.print(meatDone2);
       lcd.print(" C");
-#endif
       break;
     case 4:
-#ifdef LCD
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("Meat Done 3:");
@@ -1043,21 +967,17 @@ void updateDisplaymenue()
       lcd.setCursor(0, 1);
       lcd.print(meatDone3);
       lcd.print(" C");
-#endif
       break;
     case 5:
-#ifdef LCD
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("Meat count:");
       lcd.print(" "); //pad with a space
       lcd.setCursor(0, 1);
       lcd.print(probecount);
-#endif
       break;
 
     case 6:
-#ifdef LCD
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("Push Nachrichten:");
@@ -1069,10 +989,8 @@ void updateDisplaymenue()
       }
       else
         lcd.print("OFF");
-#endif
       break;
     case 7:
-#ifdef LCD
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("Loging:");
@@ -1084,10 +1002,8 @@ void updateDisplaymenue()
       }
       else
         lcd.print("OFF");
-#endif
       break;
     case 8:
-#ifdef LCD
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("HTTP Server:");
@@ -1099,7 +1015,6 @@ void updateDisplaymenue()
       }
       else
         lcd.print("OFF");
-#endif
       break;
   }
 }
@@ -1216,7 +1131,6 @@ void wifiConfig() {
   if ( digitalRead(TRIGGER_PIN) == LOW ) {
     server.stop();
     Serial.println("Config mode Startetd");
-#ifdef LCD
     lcd.clear();
     lcd.home();
     lcd.print("Config mode");
@@ -1228,7 +1142,6 @@ void wifiConfig() {
     lcd.print("SSID: Grilloino");
     lcd.setCursor(0, 1);
     lcd.print("PWD: 12345678");
-#endif
     //WiFiManager
     //Local intialization. Once its business is done, there is no need to keep it around
     WiFiManager wifiManager;
@@ -1262,35 +1175,29 @@ void wifiConfig() {
     delay(1000);
     //Blynk neu verbinden
     while (Blynk.connect() == false) {
-#ifdef LCD
       lcd.clear();
       lcd.home();
       lcd.print("Connected!");
       lcd.setCursor(0, 1);
       lcd.print(WiFi.localIP());
-#endif
       delay(1000);
       Blynk.config(auth);  // in place of Blynk.begin(auth, ssid, pass);
       Blynk.connect(3333);  // timeout set to 10 seconds and then continue without Blynk
       while (Blynk.connect() == false) {
         // Wait until connected
         Serial.println("Try to connect to Blynk ");
-#ifdef LCD
         lcd.clear();
         lcd.home();
         lcd.print("Try to connect");
         lcd.setCursor(0, 1);
         lcd.print("to Blynke");
-#endif
       }
-#ifdef LCD
       lcd.clear();
       lcd.home();
       lcd.print("connected");
       lcd.setCursor(0, 1);
       lcd.print("to Blynke");
       delay(1000);
-#endif
     }
   }
 }
