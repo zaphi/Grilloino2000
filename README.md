@@ -64,7 +64,7 @@ Button S2:
 - Einfach Klick -> Wert +1
 - Langer Klick -> Wert ++
 
-Button S2:
+Button S3:
 - Doppelklick -> Menü abwärts
 - Einfach Klick -> Wert -1
 - Langer Klick -> Wert --
