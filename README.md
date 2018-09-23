@@ -24,7 +24,7 @@ Funktionen:
 - Push Nachrichten
 - HTTP Server (wird vermutlich entfernt)
 
-![Grilloino](https://github.com/zaphi/Grilloino2000/blob/master/img/im22.jpg "Optionaler Titel")
+![Grilloino](https://github.com/zaphi/Grilloino2000/blob/master/img/im22_small.jpg "BLYNK")
 
 Aktueller Projektstand:
 - PCB V3.1 incl. Buttons 
