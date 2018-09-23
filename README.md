@@ -39,7 +39,7 @@ ToDo:
 
 
 HowTo:
-Es können theoretisch  alle Fühler verwendet werden die auch beim [WLANThermo V2](https://github.com/WLANThermo/WLANThermo_v2/tree/master/software/usr/share/doc/WLANThermo/probedata) funktionieren. Dort wird auch mittels der Steinhart-Hart-Gleichung gerechnet somit können die Parameter A,B,C und Rn übernommen werden. Danke für das vermessen der  Sensoren :-)
+- Es können theoretisch  alle Fühler verwendet werden die auch beim [WLANThermo V2](https://github.com/WLANThermo/WLANThermo_v2/tree/master/software/usr/share/doc/WLANThermo/probedata) funktionieren. Dort wird auch mittels der Steinhart-Hart-Gleichung gerechnet somit können die Parameter A,B,C und Rn übernommen werden. Danke für das vermessen der  Sensoren :-)
 
 Aktuell eingepflegt:
 - Maverick ET-7/71/72/73/77/901b
@@ -56,7 +56,7 @@ Messen und Korrektur V3.3:
 - float vin = 3.293;  
 
 Button S1:
--Startet WiFi Konfigurations Mode. Grilloino wird als AP im Handy sichtbar und kann mit jedem beliebigen
+- Startet WiFi Konfigurations Mode. Grilloino wird als AP im Handy sichtbar und kann mit jedem beliebigen
 Hotspot verubnden werden.
 
 Button S2:
