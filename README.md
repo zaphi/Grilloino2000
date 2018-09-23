@@ -57,14 +57,16 @@ float vin = 3.293;
 
 
 Button S1:
-Startet WiFi Konfigurations Mode. Grilloino wird als AP im Handy sichtbar und kann mit jedem beliebigen
+-Startet WiFi Konfigurations Mode. Grilloino wird als AP im Handy sichtbar und kann mit jedem beliebigen
 Hotspot verubnden werden.
+
 Button S2:
-Doppelklick -> Menü aufwärts
-Einfach Klick -> Wert +1
-Langer Klick -> Wert ++
+- Doppelklick -> Menü aufwärts
+- Einfach Klick -> Wert +1
+- Langer Klick -> Wert ++
+
 Button S2:
-Doppelklick -> Menü abwärts
-Einfach Klick -> Wert -1
-Langer Klick -> Wert --
-Langer Klick nicht im Menü -> anzeige Spannung, IP und RSSI
+- Doppelklick -> Menü abwärts
+- Einfach Klick -> Wert -1
+- Langer Klick -> Wert --
+- Langer Klick nicht im Menü -> anzeige Spannung, IP und RSSI
