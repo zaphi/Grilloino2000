@@ -13,6 +13,7 @@ Bauteile:
 - kleinkram... siehe BOM.txt
 
 ![Grilloino](https://github.com/zaphi/Grilloino2000/blob/master/img/im33.jpg "Optionaler Titel")
+![Grilloino](https://github.com/zaphi/Grilloino2000/blob/master/img/im7.jpg "Optionaler Titel")
 
 Funktionen:
 - 1x Garraum
