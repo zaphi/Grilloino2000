@@ -29,6 +29,7 @@ Funktionen:
 Aktueller Projektstand:
 - PCB V3.1 incl. Buttons 
 - 3D Druck Gehäuse
+
 ToDo:
 - korrektur Polung DC Stecker in PCB V3.2
 
