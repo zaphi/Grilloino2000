@@ -32,7 +32,7 @@ Aktueller Projektstand:
 - 3D Druck Gehäuse
 
 ![Grilloino](https://github.com/zaphi/Grilloino2000/blob/master/img/im5.jpg "BLYNK")
-![Grilloino](https://github.com/zaphi/Grilloino2000/blob/master/img/im6.jpg "BLYNK")
+
 
 ToDo:
 - korrektur Polung DC Stecker in PCB V3.2
