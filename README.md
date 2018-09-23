@@ -35,7 +35,7 @@ ToDo:
 
 
 HowTo:
-Es können theoretisch  alle Fühler verwendet werden die auch beim [WLANThermo V2](https://github.com/WLANThermo/WLANThermo_v2/tree/master/software/usr/share/doc/WLANThermo/probedata) funktionieren.
+Es können theoretisch  alle Fühler verwendet werden die auch beim [WLANThermo V2](https://github.com/WLANThermo/WLANThermo_v2/tree/master/software/usr/share/doc/WLANThermo/probedata) funktionieren. Dort wird auch mittels der Steinhart-Hart-Gleichung gerechnet somit können die Parameter A,B,C und Rn übernommen werden. Danke für das vermessen der  Sensoren :-)
 
 Aktuell eingepflegt:
 - Maverick ET-7/71/72/73/77/901b
