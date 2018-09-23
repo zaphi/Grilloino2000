@@ -51,6 +51,10 @@ Aktuell eingepflegt:
 Einstellungen für Blynk:
 - char auth[] = "PUT YOUR CODE HEAR";
 
+Einstellungen Thingspeak
+- const int channelID = Your ID;
+- String writeAPIKey = "Your Key";
+
 Messen und Korrektur V3.3:
 - Spannung an JP1 messen und im Code eintragen z.B. 3.293V
 - float vin = 3.293;  
