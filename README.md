@@ -12,7 +12,7 @@ Bauteile:
 - 16x2 LCD
 - kleinkram... siehe BOM.txt
 
-![Grilloino](https://github.com/zaphi/Grilloino2000/blob/master/img/im3.jpg "Optionaler Titel")
+![Grilloino](https://github.com/zaphi/Grilloino2000/blob/master/img/im33.jpg "Optionaler Titel")
 
 Funktionen:
 - 1x Garraum
