@@ -34,8 +34,11 @@ ToDo:
 
 
 HowTo:
+
 Es können theoretisch  alle Fühler verwendet werden die auch beim [WLANThermo V2](https://github.com/WLANThermo/WLANThermo_v2/tree/master/software/usr/share/doc/WLANThermo/probedata) funktionieren.
+
 Aktuell eingepflegt:
+
 - Maverick ET-7/71/72/73/77/901b
 - Maverick ET-735
 - Maverick ET-732/733
@@ -43,10 +46,13 @@ Aktuell eingepflegt:
 - Ikkea Fantast Neu
 
 Einstellungen für Blynk:
+
 char auth[] = "PUT YOUR CODE HEAR";
 
 Messen und Korrektur V3.3:
+
 Spannung an JP1 messen und im Code eintragen z.B. 3.293V
+
 float vin = 3.293;  
 
 
