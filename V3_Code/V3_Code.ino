@@ -136,7 +136,7 @@ int probecount = 2;
 int sensorValue = 0;
 float volt;
 float volt2;
-float offset = -0.35;
+float offset = 0;
 float Acalc;
 float Bcalc;
 float Ccalc;
