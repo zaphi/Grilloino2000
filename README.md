@@ -55,6 +55,8 @@ Einstellungen Thingspeak
 - const int channelID = Your ID;
 - String writeAPIKey = "Your Key";
 
+![Grilloino](https://github.com/zaphi/Grilloino2000/blob/master/img/ts.jpg "BLYNK")
+
 Messen und Korrektur V3.3:
 - Spannung an JP1 messen und im Code eintragen z.B. 3.293V
 - float vin = 3.293;  
