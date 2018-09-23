@@ -21,16 +21,44 @@ Funktionen:
 - Handy App mittels Blynk
 - Thingspeak Logging
 - Pitmaster (Lüfter/Klappe)
-- Push Nachrichten (wird vermutlich entfernt)
+- Push Nachrichten
 - HTTP Server (wird vermutlich entfernt)
 
 ![Grilloino](https://github.com/zaphi/Grilloino2000/blob/master/img/im22.jpg "Optionaler Titel")
 
 Aktueller Projektstand:
-- Prototyp seit Ostern im einsatz
-- Optimerite V3 PCB bestellt
-
+- PCB V3.1 incl. Buttons 
+- 3D Druck Gehäuse
 ToDo:
-- Aufbau PCB V3
-- Code Cleanup
-- umstellen auf interne refferenz
+- korrektur Polung DC Stecker in PCB V3.2
+
+
+HowTo:
+Es können theoretisch  alle Fühler verwendet werden die auch beim [WLANThermo V2](https://github.com/WLANThermo/WLANThermo_v2/tree/master/software/usr/share/doc/WLANThermo/probedata) funktionieren.
+Aktuell eingepflegt:
+- Maverick ET-7/71/72/73/77/901b
+- Maverick ET-735
+- Maverick ET-732/733
+- Ikkea Fantast
+- Ikkea Fantast Neu
+
+Einstellungen für Blynk:
+char auth[] = "PUT YOUR CODE HEAR";
+
+Messen und Korrektur V3.3:
+Spannung an JP1 messen und im Code eintragen z.B. 3.293V
+float vin = 3.293;  
+
+
+Button S1:
+Startet WiFi Konfigurations Mode. Grilloino wird als AP im Handy sichtbar und kann mit jedem beliebigen
+Hotspot verubnden werden.
+Button S2:
+Doppelklick -> Menü aufwärts
+Einfach Klick -> Wert +1
+Langer Klick -> Wert ++
+Button S2:
+Doppelklick -> Menü abwärts
+Einfach Klick -> Wert -1
+Langer Klick -> Wert --
+Langer Klick nicht im Menü -> anzeige Spannung, IP und RSSI

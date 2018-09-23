@@ -18,7 +18,8 @@
 /********************************************************************/
 //probe´s in probe.h 
 /********************************************************************/
-// smoker probe
+// see probe.h Ikkea Fantast = A_FANT, B_FANT, C_FANT and rn_FANT set it for smoker, meat, meat 2 and meat 3 acording your porbe
+// smoker probe 
 float A = A_ET73;      // "A" Coeffecient in Steinhart-Hart Equation
 float B = B_ET73;      // "B"
 float C = C_ET73;      // "C"
@@ -53,7 +54,7 @@ float r27 = 47000;                // Resistance in ohms of your fixed resistor b
 /********************************************************************/
 // ThingSpeak und Blynk Settings Grilloino
 //blynk
-char auth[] = "-";
+char auth[] = "PUT YOUR CODE HEAR";
 //thingspeak
 const char* host = "api.thingspeak.com";
 const int channelID = 437746;
