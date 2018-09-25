@@ -25,3 +25,8 @@ float A_FANTN = 3.3564021e-03;     // "A" Coeffecient in Steinhart-Hart Equation
 float B_FANTN = 2.4406605e-04;      // "B"
 float C_FANTN = 2.6173119e-06;  // "C"
 int rn_FANTN = 230.35;
+//Inkbird
+float A_INKB = 3.3552456e-03;     // "A" Coeffecient in Steinhart-Hart Equation
+float B_INKB = 2.5608666e-04;      // "B"
+float C_INKB = 1.9317204e-06;  // "C"
+int rn_INKB = 48.59;
