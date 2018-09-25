@@ -66,12 +66,12 @@ Button S1:
 Hotspot verubnden werden.
 
 Button S2:
-- Doppelklick -> Menü aufwärts
+- Doppelklick -> Menü Seite -
 - Einfach Klick -> Wert +1
 - Langer Klick -> Wert ++
 
 Button S3:
-- Doppelklick -> Menü abwärts
+- Doppelklick -> Menü Seite +
 - Einfach Klick -> Wert -1
 - Langer Klick -> Wert --
 - Langer Klick nicht im Menü -> anzeige Spannung, IP und RSSI
