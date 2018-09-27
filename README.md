@@ -75,3 +75,18 @@ Button S3:
 - Einfach Klick -> Wert -1
 - Langer Klick -> Wert --
 - Langer Klick nicht im Menü -> anzeige Spannung, IP und RSSI
+
+
+Bauteile:
+- R1-R4 47kOhm Messwiderstand
+- R5 560 Ohm
+- R9,R10,R11,R13,R14 10kOhm
+- R12 47 kOhm
+
+- C1 0,33uf
+- C2 0,1uf
+- C3,C4,C5,C6 1000 uf
+- IC2 LM7805
+- Q1 STP36NF06L
+- IC1 4051N
+
