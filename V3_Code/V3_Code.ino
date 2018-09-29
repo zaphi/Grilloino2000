@@ -11,7 +11,6 @@
 #include <BlynkSimpleEsp8266.h>
 #include <math.h>
 #include <OneWire.h>
-#include <DallasTemperature.h>
 #include <PID_v1.h>
 #include <Servo.h>
 #include "probe.h"
@@ -51,14 +50,15 @@ float r25 = 47000;                // Resistance in ohms of your fixed resistor b
 float r27 = 47000;                // Resistance in ohms of your fixed resistor bestÃ¼ckt aber nicht verwendet Multiplexer kanal 6(7)
 /********************************************************************/
 /********************************************************************/
-/********************************************************************/
+/**************************************
+******************************/
 // ThingSpeak und Blynk Settings Grilloino
 //blynk
-char auth[] = "PUT YOUR CODE HEAR";
+char auth[] = "cafc7a19eb984a608e7cd5f586a85024";
 //thingspeak
 const char* host = "api.thingspeak.com";
 const int channelID = 437746;
-String writeAPIKey = "-"; // write API key for your ThingSpeak Channel
+String writeAPIKey = "MFGDXH3KXDZ721EM"; // write API key for your ThingSpeak Channel
 /********************************************************************/
 /********************************************************************/
 /********************************************************************/
@@ -492,7 +492,7 @@ void readSensors()
   Ccalc = C;
     Serial.println(A);
   calcTemp();
-
+    Serial.println(f0);
   if (f0 < 0)                                             // If value is not a number, assign an arbitrary value
   {
     air = 0;
@@ -500,7 +500,7 @@ void readSensors()
   else
   {
     air = f0;                                                    // Otherwise use the calculated value
-
+    Serial.println(air);
   }
   Blynk.virtualWrite(V0, air);
   // request Meat 1:
