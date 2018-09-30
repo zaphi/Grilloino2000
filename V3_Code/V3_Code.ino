@@ -54,11 +54,11 @@ float r27 = 47000;                // Resistance in ohms of your fixed resistor b
 ******************************/
 // ThingSpeak und Blynk Settings Grilloino
 //blynk
-char auth[] = "cafc7a19eb984a608e7cd5f586a85024";
+char auth[] = "f";
 //thingspeak
 const char* host = "api.thingspeak.com";
-const int channelID = 437746;
-String writeAPIKey = "MFGDXH3KXDZ721EM"; // write API key for your ThingSpeak Channel
+const int channelID = 5;
+String writeAPIKey = "d"; // write API key for your ThingSpeak Channel
 /********************************************************************/
 /********************************************************************/
 /********************************************************************/
