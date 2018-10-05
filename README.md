@@ -90,3 +90,15 @@ Bauteile:
 - Q1 STP36NF06L
 - IC1 4051N
 
+
+Benötigte libraries:
+
+- [Wifi Manager](https://github.com/tzapu/WiFiManager)
+- [OneButton](https://github.com/mathertel/OneButton)
+- [Timer](https://github.com/JChristensen/Timer)
+- [LiquidCrystal-I2C-library](https://github.com/fdebrabander/Arduino-LiquidCrystal-I2C-library)
+- [Blynk](https://github.com/blynkkk/blynk-library/releases/tag/v0.5.4)
+- [PID-Library](https://github.com/br3ttb/Arduino-PID-Library)
+
+
+
