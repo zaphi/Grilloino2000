@@ -15,6 +15,10 @@
 #include <Servo.h>
 #include "probe.h"
 /********************************************************************/
+//debug
+/********************************************************************/
+#define DEBUG
+/********************************************************************/
 //probe´s in probe.h 
 /********************************************************************/
 // see probe.h Ikkea Fantast = A_FANT, B_FANT, C_FANT and rn_FANT set it for smoker, meat, meat 2 and meat 3 acording your porbe
@@ -54,7 +58,7 @@ float r27 = 47000;                // Resistance in ohms of your fixed resistor b
 ******************************/
 // ThingSpeak und Blynk Settings Grilloino
 //blynk
-char auth[] = "f";
+char auth[] = "";
 //thingspeak
 const char* host = "api.thingspeak.com";
 const int channelID = 5;
@@ -63,7 +67,7 @@ String writeAPIKey = "d"; // write API key for your ThingSpeak Channel
 /********************************************************************/
 /********************************************************************/
 /********************************************************************/
-String vers = "V3.1";
+String vers = "V3.2.1";
 /********************************************************************/
 /********************************************************************/
 int lowTemp;              //  Low limit warning for smoker temp
@@ -599,7 +603,7 @@ void pushHeat()
   myPID.Compute();
   myPID2.Compute();
   val2 = map(Output, 0, 255, 0, 300);
-  val = map(Output2, 0, 255, 0, 150);     // scale it to use it with the servo (value between 0 and 180)
+  val = map(Output2, 0, 255, 0, 300);     // scale it to use it with the servo (value between 0 and 180)
   if (val2 > 1) {
     val2 = val2 + 50;
   }
@@ -620,15 +624,15 @@ void pushHeat()
   //  myservo.write(val);                  // sets the servo position according to the scaled value
 
   //going slow to save power litle lm7805
-  if (val2 > valservo) {
-    for (int i = valservo; i <= val2; i++) {
+  if (val > valservo) {
+    for (int i = valservo; i <= val; i++) {
       myservo.write(i);
       delay(10);
       valservo = i;
     }
   }
   else {
-    for (int i = valservo; i >= val2; i--) {
+    for (int i = valservo; i >= val; i--) {
       myservo.write(i);
       valservo = i;
       delay(10);
